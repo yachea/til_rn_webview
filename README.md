@@ -1,122 +1,99 @@
-# React Native
-
-## 1. 기본상식
-
-- Android App 개발시 `Native 로 개발` : Java, Kotlin 등 (윈도우, Mac, Linux)
-- IOS App 개발시 `Native 로 개발` : Object-C, Swift 등 (윈도우 X, Mac, Linux X)
-- Hybrid 앱 : `웹 앱 + Native 의 일반 기능` (앱 마켓에 등록 가능)
-- 웹 앱 : `HTML, CSS, JavaScript` (앱 마켓에 등록 불가)
-
-## 2. 정보 전달 및 마켓등록을 위한 추천 솔루션
-
-- 공통적으로 IOS, Android 개발 가능
-- `Flutter` : 구글의 `Dart` 언어로 개발
-- `React Native` : `React, html, css, ts, 자체 컴포넌트` 로 개발 (개념상 하이브리드)
-
-## 3. RN 은 제작 도구 종류
-
-- Expo : 자료 정리 및 활용이 쉽다.
-- `React Native Cli`
-
-## 4. choco 환경 설정
-
-- 최신 버전은 절대로 배제하고, 안정화 버전을 사용함.
-- https://velog.io/@it-ju/React-native-cli-개발환경-세팅하기
-- https://reactnative.dev/docs/set-up-your-environment
-
-### 4.1. choco 설치 및 환경 확인
-
-- 윈도우 검색 > `power shell` 관리자 모드로 실행
-- https://chocolatey.org/install
-- 아래 문장을 powerShell 에 입력후 엔터
+# 프로젝트 생성
 
 ```bash
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+npx @react-native-community/cli init
 ```
-
-- 설치 후 확인
 
 ```bash
-choco 엔터
+How would you like to name the app? ... 영어소문자 프로젝트명
 ```
 
-- 결과 확인 : 버전 출력 꼭 확인
+- `/프로젝트명` 폴더 자동 생성됨.
+- 폴더 내부로 이동
 
 ```bash
-Chocolatey v2.5.1
-Please run 'choco --help' or 'choco <command> --help' for help menu.
+ cd 프로젝트명
 ```
 
-### 4.2. 설치 오류 발생시
-
-- 문제1
+- `Web View` 설치
 
 ```bash
-choco : 'choco' 용어가 cmdlet, 함수, 스크립트 파일 또는 실행할 수 있는 프로그램 이름으로 인식되지 않습니다. 이름이 정확
-한지 확인하고 경로가 포함된 경우 경로가 올바른지 검증한 다음 다시 시도하십시오.
-위치 줄:1 문자:1
-+ choco
-+ ~~~~~
-    + CategoryInfo          : ObjectNotFound: (choco:String) [], CommandNotFoundException
-    + FullyQualifiedErrorId : CommandNotFoundException
+npm install react-native-webview
 ```
 
-- 문제 해결1
+- 코드 정리(`/프로젝트명/android` 폴더로 이동)
 
 ```bash
-Set-ExecutionPolicy RemoteSigned
+cd android
+./gradlew clean
 ```
 
-## 5. Android Studio 설치
+- `상위 프로젝트 폴더`로 이동
 
-### 5.1. 다운로드
-
-- https://developer.android.com/studio?hl=ko
-- 설치파일 다운로드 후 exe 를 실행함.
-- 기본 설정 변경하지 말고 설치하자.
-
-### 5.2. Android SDK 및 버전별 설치
-
-- 최초 설치 이후 설정 화면 > `Welcome to Android` > 아래의 `More Action 메뉴` 선택
-- `SDK Manager` 메뉴 진입
-
-### 5.3. SDK Manger 관련
-
-- `Show Package Details 체크` 활성
-
-- Android API 35("VanillaIceCream")
-
-```
-  Android SDK Platform 35
-  Intel x86_64 Atom System Image
-  Google APIs Intel x86_64 Atom System Image
-  Google Play Intel x86_64 Atom System Image
+```bash
+cd ..
 ```
 
-- Android 14.0("UpsideDownCake")
+- `Adnroid Virtual Machine`을 먼저 실행 해 줌.
+- 아래 명령은 `최초는 5~10분 걸림`
 
-```
-Android SDK Platform 34
-Intel x86_64 Atom System Image
-Google APIs Intel x86_64 Atom System Image
-Google Play Intel x86_64 Atom System Image
+```bash
+npx react-native run-android
 ```
 
-- Android 13.0("Tiramisu")
+- `Build Fail 발생시` 아래를 반복해서 실행해 봄.
 
-```
-Android SDK Platform 33
-Intel x86_64 Atom System Image
-Google APIs Intel x86_64 Atom System Image
-Google Play Intel x86_64 Atom System Image
+```bash
+cd android
+./gradlew clean
 ```
 
-### 5.4. SDK Tools 세팅
+```bash
+cd ..
+npx react-native run-android
+```
 
-- Android SDK Buil-Tools 36-rc5
-- NDK
-- CMake
-- Android Emulator
-- Android Emulator hypervisor driver
-- Android SDK Platform-Tools
-- Google Play Service
+- `Adnroid Virtual Machine 오류`라면
+- 새로운 기기를 등록해서 테스트 해보자.
+
+## 1. 기본 WebView 살펴보기
+
+- `/App.tsx`
+
+```tsx
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import WebView from 'react-native-webview';
+// 컴포넌트 JS 자리
+const App = () => {
+  const webViewUrl = 'https://bab-mu.vercel.app/member';
+  return (
+    <SafeAreaView style={style.container}>
+      <WebView style={style.webview} source={{ uri: webViewUrl }} />
+    </SafeAreaView>
+  );
+};
+// 컴포넌트 CSS 오브젝트자리
+const style = StyleSheet.create({
+  // 전체 컨테이너 영역
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  // 웹뷰영역
+  webview: {
+    flex: 1,
+  },
+});
+
+export default App;
+```
+
+## 2. 웹뷰에 로딩중인 상태를 표현하자.
+
+- https://velog.io/@ttoottie/RN-데이터-로딩-UI를-자연스럽게-구성해보자
+
+```bash
+npm install @react-native-masked-view/masked-view react-native-linear-gradient --save
+```
