@@ -3,5 +3,6 @@ module.exports = {
   extends: '@react-native',
   rules: {
     '@react-native/no-deep-imports': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
   },
 };

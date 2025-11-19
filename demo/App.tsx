@@ -1,11 +1,30 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { Alert, BackHandler, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import SplashScreen from 'react-native-splash-screen';
 import WebView from 'react-native-webview';
-import { ActivityIndicator } from 'react-native/types_generated';
+import { ActivityIndicator } from 'react-native';
 // 컴포넌트 JS 자리
 const App = () => {
-  const webViewUrl = 'https://bab-mu.vercel.app/member';
+  const webViewUrl = 'https://bab-mu.vercel.app/';
+
+  // back 키 처리
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert('앱 종료', '앱을 종료하시겠습니까?', [
+        { text: '취소', onPress: () => null, style: 'cancel' },
+        { text: '종료', onPress: () => BackHandler.exitApp() },
+      ]);
+      return true; // 기본 뒤로가기 방지
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    // 컴포넌트 클린업 함수
+    return () => backHandler.remove(); // 앱 종료시 리스터 정리
+  }, []);
+
   return (
     <SafeAreaView style={style.container}>
       <WebView
@@ -19,6 +38,13 @@ const App = () => {
             <ActivityIndicator size={'large'} color={'#0fe256c8'} />
           </View>
         )}
+        // SplashScreen 적용하기
+        onLoadEnd={() => {
+          console.log('로딩완료');
+          setTimeout(() => {
+            SplashScreen.hide();
+          }, 1000);
+        }}
       />
     </SafeAreaView>
   );

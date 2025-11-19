@@ -1,122 +1,265 @@
-# React Native
+# Splash Screen (시작화면)
 
-## 1. 기본상식
+- 마켓 등록시 필수 요소
+- https://til-choonham.tistory.com/530
+- https://github.com/crazycodeboy/react-native-splash-screen
+- https://www.npmjs.com/package/react-native-splash-screen
 
-- Android App 개발시 `Native 로 개발` : Java, Kotlin 등 (윈도우, Mac, Linux)
-- IOS App 개발시 `Native 로 개발` : Object-C, Swift 등 (윈도우 X, Mac, Linux X)
-- Hybrid 앱 : `웹 앱 + Native 의 일반 기능` (앱 마켓에 등록 가능)
-- 웹 앱 : `HTML, CSS, JavaScript` (앱 마켓에 등록 불가)
-
-## 2. 정보 전달 및 마켓등록을 위한 추천 솔루션
-
-- 공통적으로 IOS, Android 개발 가능
-- `Flutter` : 구글의 `Dart` 언어로 개발
-- `React Native` : `React, html, css, ts, 자체 컴포넌트` 로 개발 (개념상 하이브리드)
-
-## 3. RN 은 제작 도구 종류
-
-- Expo : 자료 정리 및 활용이 쉽다.
-- `React Native Cli`
-
-## 4. choco 환경 설정
-
-- 최신 버전은 절대로 배제하고, 안정화 버전을 사용함.
-- https://velog.io/@it-ju/React-native-cli-개발환경-세팅하기
-- https://reactnative.dev/docs/set-up-your-environment
-
-### 4.1. choco 설치 및 환경 확인
-
-- 윈도우 검색 > `power shell` 관리자 모드로 실행
-- https://chocolatey.org/install
-- 아래 문장을 powerShell 에 입력후 엔터
+## 1. 설치
 
 ```bash
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+npm i react-native-splash-screen
 ```
 
-- 설치 후 확인
+## 2. android (MainActivity.java) 수정
+
+- `/android/app/src/main/java/com/MainActivity.kt`
+- `Kotlin 버전`
+
+```txt
+package com.demo
+
+// 추가
+import android.os.Bundle
+
+import com.facebook.react.ReactActivity
+import com.facebook.react.ReactActivityDelegate
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
+import com.facebook.react.defaults.DefaultReactActivityDelegate
+
+// 추가
+import org.devio.rn.splashscreen.SplashScreen
+
+
+class MainActivity : ReactActivity() {
+
+  /**
+   * Returns the name of the main component registered from JavaScript. This is used to schedule
+   * rendering of the component.
+   */
+  override fun getMainComponentName(): String = "demo"
+
+  /**
+   * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]
+   * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
+   */
+  override fun createReactActivityDelegate(): ReactActivityDelegate =
+      DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+
+  // 추가
+  override fun onCreate(savedInstanceState: Bundle?) {
+      SplashScreen.show(this)
+      super.onCreate(savedInstanceState)
+  }
+}
+
+```
+
+- `/android/app/src/main/java/com/앱이름/MainActivity.java`
+- `java 버전`
+
+```java
+package com.rntil;
+
+// 추가된 소스
+import android.os.Bundle; // here
+
+import com.facebook.react.ReactActivity;
+import com.facebook.react.ReactActivityDelegate;
+import com.facebook.react.defaults.DefaultNewArchitecgittureEntryPoint;
+import com.facebook.react.defaults.DefaultReactActivityDelegate;
+
+// 추가된 소스
+// react-native-splash-screen >= 0.3.1
+import org.devio.rn.splashscreen.SplashScreen; // here
+
+
+public class MainActivity extends ReactActivity {
+
+  /**
+   * Returns the name of the main component registered from JavaScript. This is used to schedule
+   * rendering of the component.
+   */
+  @Override
+  protected String getMainComponentName() {
+    return "rntil";
+  }
+
+  /**
+   * Returns the instance of the {@link ReactActivityDelegate}. Here we use a util class {@link
+   * DefaultReactActivityDelegate} which allows you to easily enable Fabric and Concurrent React
+   * (aka React 18) with two boolean flags.
+   */
+  @Override
+  protected ReactActivityDelegate createReactActivityDelegate() {
+    return new DefaultReactActivityDelegate(
+        this,
+        getMainComponentName(),
+        // If you opted-in for the New Architecture, we enable the Fabric Renderer.
+        DefaultNewArchitectureEntryPoint.getFabricEnabled());
+  }
+
+  // 추가된 소스
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+      SplashScreen.show(this);  // here
+      super.onCreate(savedInstanceState);
+  }
+
+}
+```
+
+## 3. Splash Screen 용 이미지
+
+- `900 * 900 png` 파일 추천
+
+### 3.1. 배치장소(resource 폴더)
+
+- `/android/app/src/main/res/layout 폴더` 생성
+- `/android/app/src/main/res/layout/launch_screen.xml 파일` 생성
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ImageView android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/launch_screen" android:scaleType="centerCrop" />
+</RelativeLayout>
+```
+
+### 3.2. colors.xml 파일 생성 배치
+
+- `/android/app/src/main/res/values/colors.xml 파일` 생성
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_dark">#000000</color>
+</resources>
+```
+
+### 3.3. launch_screen.png 배치함
+
+- `/android/app/src/main/res/drawable/` 붙여넣기
+
+## 4. 적용해보기
+
+- `App.tsx`적용
+
+```tsx
+// SplashScreen 적용하기
+onLoadEnd={() => {
+  console.log('로딩완료');
+  setTimeout(() => {
+    SplashScreen.hide();
+  }, 1000);
+}}
+```
+
+## 5. 최신 버전에 반영함.
+
+### 5.1. 다른 버전은 대응 필요. (지금 프로젝트에만 맞춤 진행)
+
+- `/android/gradle.properties` 수정 진행
+
+```txt
+# Project-wide Gradle settings.
+
+# IDE (e.g. Android Studio) users:
+# Gradle settings configured through the IDE *will override*
+# any settings specified in this file.
+
+# For more details on how to configure your build environment visit
+# http://www.gradle.org/docs/current/userguide/build_environment.html
+
+# Specifies the JVM arguments used for the daemon process.
+# The setting is particularly useful for tweaking memory settings.
+# Default value: -Xmx512m -XX:MaxMetaspaceSize=256m
+org.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=512m
+
+# When configured, Gradle will run in incubating parallel mode.
+# This option should only be used with decoupled projects. More details, visit
+# http://www.gradle.org/docs/current/userguide/multi_project_builds.html#sec:decoupled_projects
+# org.gradle.parallel=true
+
+# AndroidX package structure to make it clearer which packages are bundled with the
+# Android operating system, and which are packaged with your app's APK
+# https://developer.android.com/topic/libraries/support-library/androidx-rn
+android.useAndroidX=true
+# 옛날 npm 라이브러리 때문에 추가함.
+android.enableJetifier=true
+
+# Use this property to specify which architecture you want to build.
+# You can also override it from the CLI using
+# ./gradlew <task> -PreactNativeArchitectures=x86_64
+reactNativeArchitectures=armeabi-v7a,arm64-v8a,x86,x86_64
+
+# Use this property to enable support to the new architecture.
+# This will allow you to use TurboModules and the Fabric render in
+# your application. You should enable this flag either if you want
+# to write custom TurboModules/Fabric components OR use libraries that
+# are providing them.
+newArchEnabled=true
+
+# Use this property to enable or disable the Hermes JS engine.
+# If set to false, you will be using JSC instead.
+hermesEnabled=true
+
+# Use this property to enable edge-to-edge display support.
+# This allows your app to draw behind system bars for an immersive UI.
+# Note: Only works with ReactActivity and should not be used with custom Activity.
+edgeToEdgeEnabled=false
+```
+
+- 반드시 청소해요.
+- 다시 실행
+
+# Icon 배치
+
+- https://icon.kitchen
+- https://www.appicon.co
+
+## 1. 아이콘 파일 배치
+
+- `/android/app/src/res/ `붙여줌
+- android 관련 파일을 폴더 로 덮어씌워줌.
+
+# Back 키 처리
+
+- `App.tsx`
+
+```tsx
+// back키 처리
+useEffect(() => {
+  const backAction = () => {
+    Alert.alert("앱 종료", "앱을 종료하시겠습니까?", [
+      { text: "취소", onPress: () => null, style: "cancel" },
+      { text: "종료", onPress: () => BackHandler.exitApp() },
+    ]);
+    return true; // 기본 뒤로가기 방지
+  };
+
+  const backHandler = BackHandler.addEventListener(
+    "hardwareBackPress",
+    backAction
+  );
+
+  // 컴포넌트 클린업 함수
+  return () => backHandler.remove(); // 앱 종료시 리스너 정리
+}, []);
+```
+
+# 파일명.apk 추출하기
+
+- 마켓등록은 파일명.aab 파일이 있어야 합니다.
+- 테스트용 파일은 파일명.apk 로 생성함.
 
 ```bash
-choco 엔터
+cd android
+./gradlew assembleRelease
 ```
 
-- 결과 확인 : 버전 출력 꼭 확인
-
-```bash
-Chocolatey v2.5.1
-Please run 'choco --help' or 'choco <command> --help' for help menu.
-```
-
-### 4.2. 설치 오류 발생시
-
-- 문제1
-
-```bash
-choco : 'choco' 용어가 cmdlet, 함수, 스크립트 파일 또는 실행할 수 있는 프로그램 이름으로 인식되지 않습니다. 이름이 정확
-한지 확인하고 경로가 포함된 경우 경로가 올바른지 검증한 다음 다시 시도하십시오.
-위치 줄:1 문자:1
-+ choco
-+ ~~~~~
-    + CategoryInfo          : ObjectNotFound: (choco:String) [], CommandNotFoundException
-    + FullyQualifiedErrorId : CommandNotFoundException
-```
-
-- 문제 해결1
-
-```bash
-Set-ExecutionPolicy RemoteSigned
-```
-
-## 5. Android Studio 설치
-
-### 5.1. 다운로드
-
-- https://developer.android.com/studio?hl=ko
-- 설치파일 다운로드 후 exe 를 실행함.
-- 기본 설정 변경하지 말고 설치하자.
-
-### 5.2. Android SDK 및 버전별 설치
-
-- 최초 설치 이후 설정 화면 > `Welcome to Android` > 아래의 `More Action 메뉴` 선택
-- `SDK Manager` 메뉴 진입
-
-### 5.3. SDK Manger 관련
-
-- `Show Package Details 체크` 활성
-
-- Android API 35("VanillaIceCream")
-
-```
-  Android SDK Platform 35
-  Intel x86_64 Atom System Image
-  Google APIs Intel x86_64 Atom System Image
-  Google Play Intel x86_64 Atom System Image
-```
-
-- Android 14.0("UpsideDownCake")
-
-```
-Android SDK Platform 34
-Intel x86_64 Atom System Image
-Google APIs Intel x86_64 Atom System Image
-Google Play Intel x86_64 Atom System Image
-```
-
-- Android 13.0("Tiramisu")
-
-```
-Android SDK Platform 33
-Intel x86_64 Atom System Image
-Google APIs Intel x86_64 Atom System Image
-Google Play Intel x86_64 Atom System Image
-```
-
-### 5.4. SDK Tools 세팅
-
-- Android SDK Buil-Tools 36-rc5
-- NDK
-- CMake
-- Android Emulator
-- Android Emulator hypervisor driver
-- Android SDK Platform-Tools
-- Google Play Service
+- 생성되는 파일의 경로
+- `/android/app/build/outputs/apk/debug/app-debug.apk` 활용가능
+- `/android/app/build/outputs/apk/release/app-release.apk` 활용가능
+- QR 생성하기(https://me-qr.com/ko/qr-code-generator/link)
